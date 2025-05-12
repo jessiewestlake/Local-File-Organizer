@@ -24,7 +24,7 @@ from image_data_processing import (
 )
 
 from output_filter import filter_specific_output  # Import the context manager
-from nexa.gguf import NexaVLMInference, NexaTextInference  # Import model classes
+# from nexa.gguf import NexaVLMInference, NexaTextInference  # Import model classes
 
 def ensure_nltk_data():
     """Ensure that NLTK data is downloaded efficiently and quietly."""
@@ -34,49 +34,49 @@ def ensure_nltk_data():
     nltk.download('wordnet', quiet=True)
 
 # Initialize models
-image_inference = None
-text_inference = None
+# image_inference = None
+# text_inference = None
 
-def initialize_models():
-    """Initialize the models if they haven't been initialized yet."""
-    global image_inference, text_inference
-    if image_inference is None or text_inference is None:
-        # Initialize the models
-        model_path = "llava-v1.6-vicuna-7b:q4_0"
-        model_path_text = "Llama3.2-3B-Instruct:q3_K_M"
+# def initialize_models():
+#     """Initialize the models if they haven't been initialized yet."""
+#     global image_inference, text_inference
+#     if image_inference is None or text_inference is None:
+#         # Initialize the models
+#         model_path = "llava-v1.6-vicuna-7b:q4_0"
+#         model_path_text = "Llama3.2-3B-Instruct:q3_K_M"
 
-        # Use the filter_specific_output context manager
-        with filter_specific_output():
-            # Initialize the image inference model
-            image_inference = NexaVLMInference(
-                model_path=model_path,
-                local_path=None,
-                stop_words=[],
-                temperature=0.3,
-                max_new_tokens=3000,
-                top_k=3,
-                top_p=0.2,
-                profiling=False
-                # add n_ctx if out of context window usage: n_ctx=2048
-            )
+#         # Use the filter_specific_output context manager
+#         with filter_specific_output():
+#             # Initialize the image inference model
+#             image_inference = NexaVLMInference(
+#                 model_path=model_path,
+#                 local_path=None,
+#                 stop_words=[],
+#                 temperature=0.3,
+#                 max_new_tokens=3000,
+#                 top_k=3,
+#                 top_p=0.2,
+#                 profiling=False
+#                 # add n_ctx if out of context window usage: n_ctx=2048
+#             )
 
-            # Initialize the text inference model
-            text_inference = NexaTextInference(
-                model_path=model_path_text,
-                local_path=None,
-                stop_words=[],
-                temperature=0.5,
-                max_new_tokens=3000,  # Adjust as needed
-                top_k=3,
-                top_p=0.3,
-                profiling=False
-                # add n_ctx if out of context window usage: n_ctx=2048
+#             # Initialize the text inference model
+#             text_inference = NexaTextInference(
+#                 model_path=model_path_text,
+#                 local_path=None,
+#                 stop_words=[],
+#                 temperature=0.5,
+#                 max_new_tokens=3000,  # Adjust as needed
+#                 top_k=3,
+#                 top_p=0.3,
+#                 profiling=False
+#                 # add n_ctx if out of context window usage: n_ctx=2048
 
-            )
-        print("**----------------------------------------------**")
-        print("**       Image inference model initialized      **")
-        print("**       Text inference model initialized       **")
-        print("**----------------------------------------------**")
+#             )
+#         print("**----------------------------------------------**")
+#         print("**       Image inference model initialized      **")
+#         print("**       Text inference model initialized       **")
+#         print("**----------------------------------------------**")
 
 def simulate_directory_tree(operations, base_path):
     """Simulate the directory tree based on the proposed operations."""
@@ -219,7 +219,7 @@ def main():
                 # Initialize models once
                 if not silent_mode:
                     print("Checking if the model is already downloaded. If not, downloading it now.")
-                initialize_models()
+                # initialize_models()
 
                 if not silent_mode:
                     print("*" * 50)
@@ -248,15 +248,17 @@ def main():
                     text_tuples.append((fp, text_content))
 
                 # Process files sequentially
-                data_images = process_image_files(image_files, image_inference, text_inference, silent=silent_mode, log_file=log_file)
-                data_texts = process_text_files(text_tuples, text_inference, silent=silent_mode, log_file=log_file)
+                data_images = process_image_files(image_files, silent=silent_mode, log_file=log_file)
+                data_texts = process_text_files(text_tuples, silent=silent_mode, log_file=log_file)
+                all_data = data_texts  + data_images # Assuming you want to process text files only
 
                 # Prepare for copying and renaming
                 renamed_files = set()
                 processed_files = set()
 
                 # Combine all data
-                all_data = data_images + data_texts
+                # all_data = data_images + data_texts
+
 
                 # Compute the operations
                 operations = compute_operations(

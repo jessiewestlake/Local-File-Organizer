@@ -7,22 +7,36 @@ from nltk.corpus import stopwords
 from nltk.probability import FreqDist
 from nltk.stem import WordNetLemmatizer
 from rich.progress import Progress, TextColumn, BarColumn, TimeElapsedColumn
+import ollama # Import the ollama client
 from data_processing_common import sanitize_filename
 
-def summarize_text_content(text, text_inference):
-    """Summarize the given text content."""
-    prompt = f"""Provide a concise and accurate summary of the following text, focusing on the main ideas and key details.
-Limit your summary to a maximum of 150 words.
+# Define the Ollama model to use. Can be configured via environment variable.
+OLLAMA_MODEL_TEXT = os.getenv("OLLAMA_MODEL_TEXT", "gemma3:4b")
 
-Text: {text}
+def summarize_text_content_ollama(markdown_text):
+    """Summarize the given Markdown content using Ollama."""
+    prompt = f"""Provide a concise and accurate summary of the following text (which is in Markdown format), focusing on the main ideas and key details.
+Limit your summary to a maximum of 150 words and DO NOT need print out your thought
+
+Text (Markdown):
+{markdown_text}
 
 Summary:"""
-
-    response = text_inference.create_completion(prompt)
-    summary = response['choices'][0]['text'].strip()
+    try:
+        response = ollama.generate(
+            model=OLLAMA_MODEL_TEXT,
+            prompt=prompt,
+            stream=False # Get the full response at once
+        )
+        summary = response['response'].strip()
+    except Exception as e:
+        # Log the error or handle it as appropriate
+        print(f"Error calling Ollama for summary: {e}")
+        # Fallback summary or raise the exception
+        summary = "Could not generate summary due to Ollama error."
     return summary
 
-def process_single_text_file(args, text_inference, silent=False, log_file=None):
+def process_single_text_file(args, silent=False, log_file=None):
     """Process a single text file to generate metadata."""
     file_path, text = args
     start_time = time.time()
@@ -34,7 +48,9 @@ def process_single_text_file(args, text_inference, silent=False, log_file=None):
         TimeElapsedColumn()
     ) as progress:
         task_id = progress.add_task(f"Processing {os.path.basename(file_path)}", total=1.0)
-        foldername, filename, description = generate_text_metadata(text, file_path, progress, task_id, text_inference)
+        # 'text' is assumed to be Markdown content here
+        # The text_inference argument is removed as Ollama is used directly
+        foldername, filename, description = generate_text_metadata_ollama(text, file_path, progress, task_id)
 
     end_time = time.time()
     time_taken = end_time - start_time
@@ -53,27 +69,28 @@ def process_single_text_file(args, text_inference, silent=False, log_file=None):
         'description': description
     }
 
-def process_text_files(text_tuples, text_inference, silent=False, log_file=None):
+def process_text_files(text_tuples, silent=False, log_file=None):
     """Process text files sequentially."""
     results = []
     for args in text_tuples:
-        data = process_single_text_file(args, text_inference, silent=silent, log_file=log_file)
+        # text_inference argument removed
+        data = process_single_text_file(args, silent=silent, log_file=log_file)
         results.append(data)
     return results
 
-def generate_text_metadata(input_text, file_path, progress, task_id, text_inference):
-    """Generate description, folder name, and filename for a text document."""
+def generate_text_metadata_ollama(markdown_input_text, file_path, progress, task_id):
+    """Generate description, folder name, and filename for a text document using Ollama."""
 
     # Total steps in processing a text file
     total_steps = 3
 
     # Step 1: Generate description
-    description = summarize_text_content(input_text, text_inference)
+    description = summarize_text_content_ollama(markdown_input_text)
     progress.update(task_id, advance=1 / total_steps)
 
     # Step 2: Generate filename
     filename_prompt =  f"""Based on the summary below, generate a specific and descriptive filename that captures the essence of the document.
-Limit the filename to a maximum of 3 words. Use nouns and avoid starting with verbs like 'depicts', 'shows', 'presents', etc.
+Limit the filename to a maximum of 5 words. Use nouns and avoid starting with verbs like 'depicts', 'shows', 'presents', etc.
 Do not include any data type words like 'text', 'document', 'pdf', etc. Use only letters and connect words with underscores.
 
 Summary: {description}
@@ -90,8 +107,17 @@ Now generate the filename.
 Output only the filename, without any additional text.
 
 Filename:"""
-    filename_response = text_inference.create_completion(filename_prompt)
-    filename = filename_response['choices'][0]['text'].strip()
+    try:
+        filename_response_ollama = ollama.generate(
+            model=OLLAMA_MODEL_TEXT,
+            prompt=filename_prompt,
+            stream=False
+        )
+        filename = filename_response_ollama['response'].strip()
+    except Exception as e:
+        print(f"Error calling Ollama for filename: {e}")
+        filename = "untitled_document" # Fallback
+
     # Remove 'Filename:' prefix if present
     filename = re.sub(r'^Filename:\s*', '', filename, flags=re.IGNORECASE).strip()
     progress.update(task_id, advance=1 / total_steps)
@@ -115,8 +141,16 @@ Now generate the category.
 Output only the category, without any additional text.
 
 Category:"""
-    foldername_response = text_inference.create_completion(foldername_prompt)
-    foldername = foldername_response['choices'][0]['text'].strip()
+    try:
+        foldername_response_ollama = ollama.generate(
+            model=OLLAMA_MODEL_TEXT,
+            prompt=foldername_prompt,
+            stream=False
+        )
+        foldername = foldername_response_ollama['response'].strip()
+    except Exception as e:
+        print(f"Error calling Ollama for foldername: {e}")
+        foldername = "general_documents" # Fallback
     # Remove 'Category:' prefix if present
     foldername = re.sub(r'^Category:\s*', '', foldername, flags=re.IGNORECASE).strip()
     progress.update(task_id, advance=1 / total_steps)

@@ -5,24 +5,14 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from rich.progress import Progress, TextColumn, BarColumn, TimeElapsedColumn
+import ollama # Import ollama client
 from data_processing_common import sanitize_filename  # Import sanitize_filename
 
-def get_text_from_generator(generator):
-    """Extract text from the generator response."""
-    response_text = ""
-    try:
-        while True:
-            response = next(generator)
-            choices = response.get('choices', [])
-            for choice in choices:
-                delta = choice.get('delta', {})
-                if 'content' in delta:
-                    response_text += delta['content']
-    except StopIteration:
-        pass
-    return response_text
+# Define the Ollama models to use. Can be configured via environment variables.
+OLLAMA_MODEL_VISION = os.getenv("OLLAMA_MODEL_VISION", "gemma3:4b") # Example VLM
+OLLAMA_MODEL_TEXT_FOR_IMAGE_METADATA = os.getenv("OLLAMA_MODEL_TEXT_FOR_IMAGE_METADATA", "gemma3:4b") # For filename/foldername from description
 
-def process_single_image(image_path, image_inference, text_inference, silent=False, log_file=None):
+def process_single_image(image_path, silent=False, log_file=None):
     """Process a single image file to generate metadata."""
     start_time = time.time()
 
@@ -33,7 +23,8 @@ def process_single_image(image_path, image_inference, text_inference, silent=Fal
         TimeElapsedColumn()
     ) as progress:
         task_id = progress.add_task(f"Processing {os.path.basename(image_path)}", total=1.0)
-        foldername, filename, description = generate_image_metadata(image_path, progress, task_id, image_inference, text_inference)
+        # image_inference and text_inference arguments are removed as Ollama is used directly
+        foldername, filename, description = generate_image_metadata_ollama(image_path, progress, task_id)
     
     end_time = time.time()
     time_taken = end_time - start_time
@@ -52,29 +43,44 @@ def process_single_image(image_path, image_inference, text_inference, silent=Fal
         'description': description
     }
 
-def process_image_files(image_paths, image_inference, text_inference, silent=False, log_file=None):
+def process_image_files(image_paths, silent=False, log_file=None):
     """Process image files sequentially."""
     data_list = []
     for image_path in image_paths:
-        data = process_single_image(image_path, image_inference, text_inference, silent=silent, log_file=log_file)
+        # image_inference and text_inference arguments removed
+        data = process_single_image(image_path, silent=silent, log_file=log_file)
         data_list.append(data)
     return data_list
 
-def generate_image_metadata(image_path, progress, task_id, image_inference, text_inference):
-    """Generate description, folder name, and filename for an image file."""
+def generate_image_metadata_ollama(image_path, progress, task_id):
+    """Generate description, folder name, and filename for an image file using Ollama."""
 
     # Total steps in processing an image
     total_steps = 3
 
-    # Step 1: Generate description using image_inference
+    # Step 1: Generate description using Ollama Vision model
     description_prompt = "Please provide a detailed description of this image, focusing on the main subject and any important details."
-    description_generator = image_inference._chat(description_prompt, image_path)
-    description = get_text_from_generator(description_generator).strip()
+    description = "Could not generate description." # Default
+    try:
+        # For Ollama VLM, you typically provide the image path directly in the 'images' list
+        response = ollama.generate(
+            model=OLLAMA_MODEL_VISION,
+            prompt=description_prompt,
+            images=[image_path], # Pass the image path
+            stream=False
+        )
+        description = response['response'].strip()
+    except FileNotFoundError:
+        print(f"Error: Image file not found at {image_path} for Ollama processing.")
+        # Keep default description or handle as needed
+    except Exception as e:
+        print(f"Error calling Ollama Vision for image description ({image_path}): {e}")
+        # Keep default description
     progress.update(task_id, advance=1 / total_steps)
 
     # Step 2: Generate filename using text_inference
     filename_prompt = f"""Based on the description below, generate a specific and descriptive filename for the image.
-Limit the filename to a maximum of 3 words. Use nouns and avoid starting with verbs like 'depicts', 'shows', 'presents', etc.
+Limit the filename to a maximum of 5 words. Use nouns and avoid starting with verbs like 'depicts', 'shows', 'presents', etc.
 Do not include any data type words like 'image', 'jpg', 'png', etc. Use only letters and connect words with underscores.
 
 Description: {description}
@@ -88,8 +94,17 @@ Now generate the filename.
 Output only the filename, without any additional text.
 
 Filename:"""
-    filename_response = text_inference.create_completion(filename_prompt)
-    filename = filename_response['choices'][0]['text'].strip()
+    filename = "untitled_image" # Default
+    try:
+        filename_response_ollama = ollama.generate(
+            model=OLLAMA_MODEL_TEXT_FOR_IMAGE_METADATA, # Use a text model for this
+            prompt=filename_prompt,
+            stream=False
+        )
+        filename = filename_response_ollama['response'].strip()
+    except Exception as e:
+        print(f"Error calling Ollama for image filename ({image_path}): {e}")
+        # Keep default filename
     # Remove 'Filename:' prefix if present
     filename = re.sub(r'^Filename:\s*', '', filename, flags=re.IGNORECASE).strip()
     progress.update(task_id, advance=1 / total_steps)
@@ -116,8 +131,17 @@ Now generate the category.
 Output only the category, without any additional text.
 
 Category:"""
-    foldername_response = text_inference.create_completion(foldername_prompt)
-    foldername = foldername_response['choices'][0]['text'].strip()
+    foldername = "general_images" # Default
+    try:
+        foldername_response_ollama = ollama.generate(
+            model=OLLAMA_MODEL_TEXT_FOR_IMAGE_METADATA, # Use a text model for this
+            prompt=foldername_prompt,
+            stream=False
+        )
+        foldername = foldername_response_ollama['response'].strip()
+    except Exception as e:
+        print(f"Error calling Ollama for image foldername ({image_path}): {e}")
+        # Keep default foldername
     # Remove 'Category:' prefix if present
     foldername = re.sub(r'^Category:\s*', '', foldername, flags=re.IGNORECASE).strip()
     progress.update(task_id, advance=1 / total_steps)
