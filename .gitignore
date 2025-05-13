@@ -13,7 +13,6 @@ __pycache__/
 env/
 venv/
 .venv/
-
 # Ignore log files and temporary files
 *.log
 *.tmp
