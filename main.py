@@ -1,5 +1,7 @@
 import os
 import time
+from audio_data_processing import process_audio_files
+from video_data_processing import process_video_files
 
 from file_utils import (
     display_directory_tree,
@@ -32,51 +34,6 @@ def ensure_nltk_data():
     nltk.download('stopwords', quiet=True)
     nltk.download('punkt', quiet=True)
     nltk.download('wordnet', quiet=True)
-
-# Initialize models
-# image_inference = None
-# text_inference = None
-
-# def initialize_models():
-#     """Initialize the models if they haven't been initialized yet."""
-#     global image_inference, text_inference
-#     if image_inference is None or text_inference is None:
-#         # Initialize the models
-#         model_path = "llava-v1.6-vicuna-7b:q4_0"
-#         model_path_text = "Llama3.2-3B-Instruct:q3_K_M"
-
-#         # Use the filter_specific_output context manager
-#         with filter_specific_output():
-#             # Initialize the image inference model
-#             image_inference = NexaVLMInference(
-#                 model_path=model_path,
-#                 local_path=None,
-#                 stop_words=[],
-#                 temperature=0.3,
-#                 max_new_tokens=3000,
-#                 top_k=3,
-#                 top_p=0.2,
-#                 profiling=False
-#                 # add n_ctx if out of context window usage: n_ctx=2048
-#             )
-
-#             # Initialize the text inference model
-#             text_inference = NexaTextInference(
-#                 model_path=model_path_text,
-#                 local_path=None,
-#                 stop_words=[],
-#                 temperature=0.5,
-#                 max_new_tokens=3000,  # Adjust as needed
-#                 top_k=3,
-#                 top_p=0.3,
-#                 profiling=False
-#                 # add n_ctx if out of context window usage: n_ctx=2048
-
-#             )
-#         print("**----------------------------------------------**")
-#         print("**       Image inference model initialized      **")
-#         print("**       Text inference model initialized       **")
-#         print("**----------------------------------------------**")
 
 def simulate_directory_tree(operations, base_path):
     """Simulate the directory tree based on the proposed operations."""
@@ -230,7 +187,9 @@ def main():
                 link_type_counts = {'hardlink': 0, 'symlink': 0}
 
                 # Separate files by type
-                image_files, text_files = separate_files_by_type(file_paths)
+                # image_files, text_files = separate_files_by_type(file_paths)
+                image_files, text_files, audio_files, video_files = separate_files_by_type(file_paths)
+
 
                 # Prepare text tuples for processing
                 text_tuples = []
@@ -250,15 +209,14 @@ def main():
                 # Process files sequentially
                 data_images = process_image_files(image_files, silent=silent_mode, log_file=log_file)
                 data_texts = process_text_files(text_tuples, silent=silent_mode, log_file=log_file)
-                all_data = data_texts  + data_images # Assuming you want to process text files only
+                data_audios = process_audio_files(audio_files, silent=silent_mode, log_file=log_file)
+                data_videos = process_video_files(video_files, silent=silent_mode, log_file=log_file)
+
+                all_data = data_texts  + data_images + data_audios + data_videos # Assuming you want to process text files only
 
                 # Prepare for copying and renaming
                 renamed_files = set()
                 processed_files = set()
-
-                # Combine all data
-                # all_data = data_images + data_texts
-
 
                 # Compute the operations
                 operations = compute_operations(
