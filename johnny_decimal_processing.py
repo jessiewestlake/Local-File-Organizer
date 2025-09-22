@@ -241,7 +241,7 @@ class JohnnyDecimalOrganizer:
             if next_id < 10:
                 next_id = 10
             if next_id > 99:
-                raise ValueError(f"Category {category} has reached maximum of 90 items (.10-.99)")
+                raise ValueError(f"Category {category} has reached the maximum of 90 items (IDs .10 through .99 inclusive)")
         
         return f"{category}.{next_id:02d}"
 
