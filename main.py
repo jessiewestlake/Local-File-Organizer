@@ -25,6 +25,10 @@ from image_data_processing import (
     process_image_files
 )
 
+from johnny_decimal_processing import (
+    process_files_johnny_decimal
+)
+
 from output_filter import filter_specific_output  # Import the context manager
 # from nexa.gguf import NexaVLMInference, NexaTextInference  # Import model classes
 
@@ -78,7 +82,8 @@ def get_mode_selection():
         print("1. By Content")
         print("2. By Date")
         print("3. By Type")
-        response = input("Enter 1, 2, or 3 (or type '/exit' to exit): ").strip()
+        print("4. By Johnny.Decimal System (hierarchical numbering)")
+        response = input("Enter 1, 2, 3, or 4 (or type '/exit' to exit): ").strip()
         if response == '/exit':
             print("Exiting program.")
             exit()
@@ -88,8 +93,10 @@ def get_mode_selection():
             return 'date'
         elif response == '3':
             return 'type'
+        elif response == '4':
+            return 'johnny_decimal'
         else:
-            print("Invalid selection. Please enter 1, 2, or 3. To exit, type '/exit'.")
+            print("Invalid selection. Please enter 1, 2, 3, or 4. To exit, type '/exit'.")
 
 def main():
     # Ensure NLTK data is downloaded efficiently and quietly
@@ -232,6 +239,31 @@ def main():
             elif mode == 'type':
                 # Process files by type
                 operations = process_files_by_type(file_paths, output_path, dry_run=False, silent=silent_mode, log_file=log_file)
+            elif mode == 'johnny_decimal':
+                # Process files using Johnny.Decimal system
+                # Collect content descriptions if we have processed files with AI
+                file_descriptions = {}
+                
+                # Try to get descriptions from previously processed files
+                if 'all_data' in locals():
+                    for data in all_data:
+                        if 'file_path' in data and 'description' in data:
+                            file_descriptions[data['file_path']] = data['description']
+                
+                if not silent_mode:
+                    print("*" * 50)
+                    print("Organizing files using Johnny.Decimal system...")
+                    print("This creates a hierarchical structure with numbered areas, categories, and items.")
+                    print("*" * 50)
+                
+                operations = process_files_johnny_decimal(
+                    file_paths, 
+                    output_path, 
+                    file_descriptions=file_descriptions,
+                    dry_run=False, 
+                    silent=silent_mode, 
+                    log_file=log_file
+                )
             else:
                 print("Invalid mode selected.")
                 return

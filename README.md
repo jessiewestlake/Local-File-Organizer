@@ -60,7 +60,73 @@ After:
     └── google_cloud_agent_development_hackathon.mp4
 ```
 
+## Organization Modes 🗂️
+
+The Local File Organizer supports four different organization modes:
+
+### 1. By Content (AI-Powered)
+Uses AI to analyze file content and create meaningful folder structures based on topics and themes.
+
+### 2. By Date  
+Organizes files into folders based on their creation or modification dates.
+
+### 3. By Type
+Groups files by their file extensions and types (documents, images, audio, etc.).
+
+### 4. By Johnny.Decimal System 📊
+Implements the official Johnny.Decimal methodology - a system to organize your life:
+
+**Core Goal:** Find things quickly, with more confidence, and less stress.
+
+**What it organizes:** Everything - files, email, notes, digital accounts, physical items.
+
+**How it works:**
+- **Areas (10-19, 20-29, etc.)**: Broad areas of your life (max 10)
+- **Categories (11, 12, 13, etc.)**: Collections of similar things (max 10 per area)  
+- **IDs (11.01, 11.02, etc.)**: Individual items/projects (max 100 per category)
+
+**Key Principles:**
+- Numbers never change once assigned
+- Everything has exactly one place
+- Maximum 3 levels of hierarchy
+- The JDex (index) in your notes app IS your system
+
+**Example Johnny.Decimal Structure:**
+```
+organized_folder/
+├── 10-19 Life admin/
+│   ├── 11 Me/
+│   │   ├── 11.01 passport_renewal.pdf
+│   │   └── 11.02 health_insurance.pdf
+│   ├── 12 House/
+│   │   ├── 12.01 mortgage_documents.pdf
+│   │   └── 12.02 utilities_setup.pdf
+│   └── 15 Travel/
+│       ├── 15.01 trip_to_japan.pdf
+│       └── 15.02 weekend_paris.pdf
+├── 20-29 Work/
+│   └── 21 Current work/
+│       ├── 21.01 project_alpha.docx
+│       └── 21.02 meeting_notes.txt
+└── 30-39 Projects/
+    └── 31 Active/
+        ├── 31.01 learning_guitar.md
+        └── 31.02 home_automation.py
+```
+
+**The JDex (Index):** The system creates a foundation for your Johnny.Decimal index - a central record kept in your notes app (Bear, Obsidian, etc.) that tracks where everything is across your entire digital life. This becomes your system's memory and search interface.
+
+Based on the official methodology from [johnnydecimal.com](https://johnnydecimal.com/)
+
 ## Updates 🚀
+
+**[2025/01] Johnny.Decimal System Added**:
+* Added optional Johnny.Decimal organization mode for hierarchical file management
+* Implements the Johnny.Decimal numbering system (Areas: 10-19, Categories: 11-19, Items: 11.01-11.99)
+* Creates structured folder hierarchies with meaningful categorization
+* Supports 9 main areas: Personal Management, Professional Work, Creative Projects, Reference Materials, Media Collection, Technical Resources, Communication, Archives, and Miscellaneous
+* Works with AI-generated content descriptions for better categorization
+
 **[2025/05] v0.0.3**:
 * Major Backend Change: Switched AI inference from Nexa SDK to gemma3 and openai-whisper for local LLM/VLM processing. 
 * Enhanced Text Processing: Integrated MarkItDown for robust conversion of various text file types (DOCX, PDF, PPTX, etc.) to Markdown before AI analysis. 
@@ -89,7 +155,7 @@ Please update the project by deleting the original project folder and reinstalli
 - [x] ebook format support
 - [x] audio file support
 - [x] video file support
-- [ ] Implement best practices like Johnny Decimal
+- [x] Implement best practices like Johnny Decimal
 - [x] Check file duplication and more for pre-processing sort file-> using https://github.com/tfeldmann/organize 
 - [ ] Dockerfile for easier installation
 

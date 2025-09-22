@@ -21,3 +21,7 @@ venv/
 # Ignore example output files
 organized_folder/
 operation_log.txt
+
+# Test files and temporary directories
+test_johnny_decimal.py
+/tmp/
