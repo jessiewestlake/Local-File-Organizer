@@ -1,256 +1,255 @@
 """
 Johnny.Decimal System Implementation for Local File Organizer
 
-The Johnny.Decimal system uses a hierarchical numbering approach:
-- Areas: 10-19, 20-29, 30-39, etc. (broad categories)
-- Categories: 11, 12, 13, etc. (subcategories within areas)
-- Items: 11.01, 11.02, 11.03, etc. (individual files)
+The Johnny.Decimal system is an organizational methodology with these core principles:
+- Areas: 10-19, 20-29, 30-39, etc. (10 possible areas maximum)
+- Categories: 11-19, 21-29, 31-39, etc. (10 categories per area maximum)  
+- Items: 11.01-11.99, 12.01-12.99, etc. (100 items per category maximum)
+
+Key principles:
+- Everything has one place and one unique number
+- Numbers never change once assigned
+- Maximum 3 levels of hierarchy (Area/Category/Item)
+- User defines their own organizational structure
+- System provides the framework, not predefined categories
 
 Example structure:
-10-19 Personal Management
-├── 11 Finance
+10-19 Life Admin
+├── 11 Banking
 │   ├── 11.01 Bank statements
-│   ├── 11.02 Tax documents
-│   └── 11.03 Investment records
-├── 12 Health
-│   ├── 12.01 Medical records
-│   └── 12.02 Insurance documents
-└── 13 Education
-    ├── 13.01 Certificates
-    └── 13.02 Course materials
+│   └── 11.02 Account setup
+├── 12 Tax
+│   ├── 12.01 Tax returns
+│   └── 12.02 Receipts
+└── 13 Insurance
+    └── 13.01 Policies
+
+Reference: https://johnnydecimal.com/
 """
 
 import os
 import re
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from data_processing_common import sanitize_filename
 
 
 class JohnnyDecimalOrganizer:
-    """Johnny.Decimal system organizer for file management."""
+    """
+    Johnny.Decimal system organizer implementing the official methodology.
     
-    def __init__(self):
-        # Define standard areas and categories based on common file types
-        self.areas = {
-            10: "Personal Management",
-            20: "Professional Work", 
-            30: "Creative Projects",
-            40: "Reference Materials",
-            50: "Media Collection",
-            60: "Technical Resources",
-            70: "Communication",
-            80: "Archives",
-            90: "Miscellaneous"
-        }
-        
-        # Define categories within each area
-        self.categories = {
-            # Personal Management (10-19)
-            11: "Finance",
-            12: "Health", 
-            13: "Education",
-            14: "Legal Documents",
-            15: "Travel",
-            16: "Personal Projects",
-            17: "Insurance",
-            18: "Housing",
-            19: "Personal Archive",
-            
-            # Professional Work (20-29)
-            21: "Projects",
-            22: "Reports",
-            23: "Presentations", 
-            24: "Contracts",
-            25: "Research",
-            26: "Meeting Notes",
-            27: "Professional Development",
-            28: "Business Documents",
-            29: "Work Archive",
-            
-            # Creative Projects (30-39)
-            31: "Photography",
-            32: "Writing",
-            33: "Design",
-            34: "Music",
-            35: "Video",
-            36: "Art",
-            37: "Crafts",
-            38: "Creative Tools",
-            39: "Creative Archive",
-            
-            # Reference Materials (40-49)
-            41: "Documentation",
-            42: "Manuals",
-            43: "Research Papers",
-            44: "Books",
-            45: "Articles",
-            46: "Standards",
-            47: "Guidelines",
-            48: "Templates",
-            49: "Reference Archive",
-            
-            # Media Collection (50-59)
-            51: "Images",
-            52: "Audio",
-            53: "Video Files",
-            54: "Graphics",
-            55: "Multimedia",
-            56: "Screenshots",
-            57: "Digital Art",
-            58: "Media Tools",
-            59: "Media Archive",
-            
-            # Technical Resources (60-69)
-            61: "Code",
-            62: "Configurations",
-            63: "Databases",
-            64: "Systems",
-            65: "Software",
-            66: "Technical Documentation",
-            67: "Development Tools",
-            68: "Technical Projects",
-            69: "Technical Archive",
-            
-            # Communication (70-79)
-            71: "Emails",
-            72: "Messages",
-            73: "Social Media",
-            74: "Forums",
-            75: "Correspondence",
-            76: "Announcements",
-            77: "Marketing",
-            78: "Public Relations",
-            79: "Communication Archive",
-            
-            # Archives (80-89)
-            81: "Old Projects",
-            82: "Backup Files",
-            83: "Historical Data",
-            84: "Legacy Systems",
-            85: "Old Media",
-            86: "Retired Documents",
-            87: "Archive Tools",
-            88: "Migration Data",
-            89: "General Archive",
-            
-            # Miscellaneous (90-99)
-            91: "Temporary Files",
-            92: "Downloads",
-            93: "Uncategorized",
-            94: "Tools",
-            95: "Utilities",
-            96: "Experimental",
-            97: "Testing",
-            98: "Sandbox",
-            99: "Mixed Content"
-        }
-        
-        # Category mapping based on content keywords
-        self.content_category_mapping = {
-            # Finance related
-            "finance": 11, "money": 11, "bank": 11, "tax": 11, "budget": 11, "investment": 11,
-            "financial": 11, "accounting": 11, "receipt": 11, "invoice": 11,
-            
-            # Health related  
-            "health": 12, "medical": 12, "doctor": 12, "hospital": 12, "medicine": 12,
-            "healthcare": 12, "treatment": 12, "therapy": 12, "diagnosis": 12,
-            
-            # Education related
-            "education": 13, "school": 13, "university": 13, "course": 13, "learning": 13,
-            "study": 13, "academic": 13, "research": 13, "thesis": 13, "degree": 13,
-            
-            # Legal related
-            "legal": 14, "contract": 24, "agreement": 24, "law": 14, "court": 14,
-            "lawyer": 14, "attorney": 14, "litigation": 14,
-            
-            # Travel related
-            "travel": 15, "trip": 15, "vacation": 15, "flight": 15, "hotel": 15,
-            "tourism": 15, "journey": 15, "destination": 15,
-            
-            # Technology related
-            "technology": 66, "tech": 66, "software": 65, "hardware": 64, "computer": 64,
-            "programming": 61, "code": 61, "development": 61, "system": 64,
-            
-            # Creative related
-            "photo": 31, "image": 51, "picture": 51, "photography": 31,
-            "music": 34, "audio": 52, "sound": 52, "video": 53, "film": 53, "movie": 53,
-            "art": 36, "design": 33, "creative": 36, "drawing": 36, "painting": 36,
-            
-            # Professional related
-            "project": 21, "work": 21, "business": 28, "professional": 21,
-            "report": 22, "presentation": 23, "meeting": 26,
-            
-            # Reference related
-            "manual": 42, "documentation": 41, "guide": 42, "reference": 41,
-            "book": 44, "article": 45, "paper": 43, "standard": 46
-        }
-        
-        # File extension to category mapping
-        self.extension_category_mapping = {
-            # Images
-            ".jpg": 51, ".jpeg": 51, ".png": 51, ".gif": 51, ".bmp": 51, ".tiff": 51, ".svg": 51,
-            
-            # Audio
-            ".mp3": 52, ".wav": 52, ".flac": 52, ".aac": 52, ".ogg": 52, ".m4a": 52,
-            
-            # Video
-            ".mp4": 53, ".avi": 53, ".mkv": 53, ".mov": 53, ".wmv": 53, ".flv": 53,
-            
-            # Documents
-            ".pdf": 41, ".doc": 22, ".docx": 22, ".txt": 41, ".md": 41,
-            
-            # Spreadsheets
-            ".xls": 22, ".xlsx": 22, ".csv": 22,
-            
-            # Presentations
-            ".ppt": 23, ".pptx": 23,
-            
-            # Code
-            ".py": 61, ".js": 61, ".html": 61, ".css": 61, ".java": 61, ".cpp": 61, ".c": 61,
-            ".php": 61, ".rb": 61, ".go": 61, ".rs": 61, ".ts": 61,
-            
-            # Archives
-            ".zip": 82, ".rar": 82, ".7z": 82, ".tar": 82, ".gz": 82,
-            
-            # Configuration
-            ".json": 62, ".xml": 62, ".yaml": 62, ".yml": 62, ".ini": 62, ".cfg": 62, ".conf": 62
-        }
-
-    def categorize_file(self, file_path: str, content_description: str = "") -> Tuple[int, int, str]:
+    Provides the structural framework while allowing users to define their own
+    areas and categories based on their specific organizational needs.
+    """
+    
+    def __init__(self, custom_areas: Optional[Dict[int, str]] = None, 
+                 custom_categories: Optional[Dict[int, str]] = None):
         """
-        Categorize a file into Johnny.Decimal system.
+        Initialize the organizer with optional custom areas and categories.
+        
+        Args:
+            custom_areas: Dict of area_number -> area_name (10, 20, 30, etc.)
+            custom_categories: Dict of category_number -> category_name (11, 12, etc.)
+        """
+        # Define default areas if none provided - these are just examples
+        # Users should customize these based on their needs
+        self.areas = custom_areas or {
+            10: "Life Admin",      # Personal administration
+            20: "Work",            # Professional activities  
+            30: "Projects",        # Active projects
+            40: "Resources",       # Reference materials
+            50: "Archive",         # Historical/completed items
+        }
+        
+        # Validate areas follow Johnny.Decimal rules
+        self._validate_areas()
+        
+        # Define default categories if none provided - these are examples
+        # Users should customize based on their specific area contents
+        self.categories = custom_categories or self._create_default_categories()
+        
+    def _validate_areas(self):
+        """Validate that areas follow Johnny.Decimal rules."""
+        if len(self.areas) > 10:
+            raise ValueError("Johnny.Decimal system allows maximum 10 areas")
+        
+        for area_num in self.areas.keys():
+            if area_num % 10 != 0 or area_num < 10 or area_num > 90:
+                raise ValueError(f"Area number {area_num} invalid. Must be 10, 20, 30, ..., 90")
+    
+    def _create_default_categories(self) -> Dict[int, str]:
+        """Create default categories for defined areas."""
+        categories = {}
+        
+        # Only create a few example categories, not all possible ones
+        # Users should extend this based on their needs
+        for area_num, area_name in self.areas.items():
+            if area_num == 10:  # Life Admin
+                categories.update({
+                    11: "Banking",
+                    12: "Tax", 
+                    13: "Insurance"
+                })
+            elif area_num == 20:  # Work
+                categories.update({
+                    21: "Projects",
+                    22: "Admin",
+                    23: "Development"
+                })
+            elif area_num == 30:  # Projects  
+                categories.update({
+                    31: "Active",
+                    32: "Planning"
+                })
+            elif area_num == 40:  # Resources
+                categories.update({
+                    41: "Documentation",
+                    42: "Templates"
+                })
+            elif area_num == 50:  # Archive
+                categories.update({
+                    51: "Completed",
+                    52: "Historical"
+                })
+        
+        return categories
+    
+    def get_available_areas(self) -> Dict[int, str]:
+        """Get all available areas."""
+        return self.areas.copy()
+    
+    def get_categories_for_area(self, area_number: int) -> Dict[int, str]:
+        """Get all categories for a specific area."""
+        area_start = area_number
+        area_end = area_number + 9
+        return {cat_num: name for cat_num, name in self.categories.items() 
+                if area_start <= cat_num <= area_end}
+    
+    def add_category(self, category_number: int, category_name: str):
+        """Add a new category to the system."""
+        area_number = (category_number // 10) * 10
+        
+        if area_number not in self.areas:
+            raise ValueError(f"Area {area_number} not defined")
+        
+        if category_number < area_number or category_number > area_number + 9:
+            raise ValueError(f"Category {category_number} not in valid range for area {area_number}")
+        
+        self.categories[category_number] = category_name
+
+    def categorize_file_intelligently(self, file_path: str, content_description: str = "") -> Tuple[int, int, str]:
+        """
+        Intelligently suggest a category for a file based on content and type.
         
         Returns:
-            Tuple of (area_number, category_number, item_description)
+            Tuple of (area_number, category_number, category_name)
         """
         file_name = os.path.basename(file_path).lower()
         file_ext = os.path.splitext(file_path)[1].lower()
         content_lower = content_description.lower()
         
-        # Try to categorize based on content keywords first
-        for keyword, category in self.content_category_mapping.items():
-            if keyword in content_lower or keyword in file_name:
-                area = (category // 10) * 10
-                return area, category, self.categories[category]
+        # Simple keyword-based suggestions for common file types
+        keyword_suggestions = {
+            # Life Admin (10-19)
+            "bank": 11, "statement": 11, "account": 11, "finance": 11,
+            "tax": 12, "return": 12, "receipt": 12,
+            "insurance": 13, "policy": 13, "claim": 13,
+            
+            # Work (20-29) 
+            "project": 21, "proposal": 21, "plan": 21,
+            "admin": 22, "form": 22, "process": 22,
+            "code": 23, "develop": 23, "script": 23,
+            
+            # Projects (30-39)
+            "active": 31, "current": 31, "ongoing": 31,
+            "planning": 32, "idea": 32, "draft": 32,
+            
+            # Resources (40-49)
+            "manual": 41, "guide": 41, "documentation": 41, "doc": 41,
+            "template": 42, "format": 42, "example": 42,
+            
+            # Archive (50-59)
+            "old": 51, "completed": 51, "finished": 51,
+            "history": 52, "backup": 52, "archive": 52
+        }
         
-        # Try to categorize based on file extension
-        if file_ext in self.extension_category_mapping:
-            category = self.extension_category_mapping[file_ext]
-            area = (category // 10) * 10
-            return area, category, self.categories[category]
+        # Check content and filename for keywords
+        text_to_check = f"{content_lower} {file_name}"
+        for keyword, suggested_category in keyword_suggestions.items():
+            if keyword in text_to_check and suggested_category in self.categories:
+                area = (suggested_category // 10) * 10
+                return area, suggested_category, self.categories[suggested_category]
         
-        # Default to miscellaneous
-        return 90, 93, self.categories[93]
+        # File extension based suggestions
+        extension_suggestions = {
+            # Documentation
+            ".pdf": 41, ".doc": 41, ".docx": 41, ".txt": 41, ".md": 41,
+            # Templates/Formats  
+            ".xlsx": 42, ".xls": 42, ".pptx": 42, ".ppt": 42,
+            # Code/Development
+            ".py": 23, ".js": 23, ".html": 23, ".css": 23, ".json": 23,
+            # Archives
+            ".zip": 52, ".rar": 52, ".tar": 52, ".gz": 52
+        }
+        
+        if file_ext in extension_suggestions:
+            suggested_category = extension_suggestions[file_ext]
+            if suggested_category in self.categories:
+                area = (suggested_category // 10) * 10
+                return area, suggested_category, self.categories[suggested_category]
+        
+        # Default to first category in first area
+        first_area = min(self.areas.keys())
+        area_categories = self.get_categories_for_area(first_area)
+        if area_categories:
+            first_category = min(area_categories.keys())
+            return first_area, first_category, area_categories[first_category]
+        
+        # Fallback
+        return 10, 11, "Uncategorized"
+
+    def categorize_file(self, file_path: str, content_description: str = "", 
+                       suggested_area: Optional[int] = None, 
+                       suggested_category: Optional[int] = None) -> Tuple[int, int, str]:
+        """
+        Categorize a file into Johnny.Decimal system.
+        
+        Args:
+            file_path: Path to the file
+            content_description: AI-generated description of file content
+            suggested_area: User-suggested area number (optional)
+            suggested_category: User-suggested category number (optional)
+            
+        Returns:
+            Tuple of (area_number, category_number, category_name)
+        """
+        # If user provided specific suggestions, use them
+        if suggested_category and suggested_category in self.categories:
+            area = (suggested_category // 10) * 10
+            return area, suggested_category, self.categories[suggested_category]
+        
+        if suggested_area and suggested_area in self.areas:
+            # Find first available category in suggested area
+            area_categories = self.get_categories_for_area(suggested_area)
+            if area_categories:
+                first_category = min(area_categories.keys())
+                return suggested_area, first_category, area_categories[first_category]
+        
+        # Otherwise use intelligent categorization
+        return self.categorize_file_intelligently(file_path, content_description)
 
     def generate_johnny_decimal_path(self, file_path: str, content_description: str = "",
-                                   item_counter: Dict[int, int] = None) -> Tuple[str, str]:
+                                   item_counter: Dict[int, int] = None,
+                                   suggested_area: Optional[int] = None,
+                                   suggested_category: Optional[int] = None) -> Tuple[str, str]:
         """
-        Generate Johnny.Decimal path for a file.
+        Generate Johnny.Decimal path for a file following official methodology.
         
         Args:
             file_path: Original file path
             content_description: AI-generated description of file content
             item_counter: Dictionary to track item numbers per category
+            suggested_area: User-suggested area number (optional)
+            suggested_category: User-suggested category number (optional)
             
         Returns:
             Tuple of (folder_path, new_filename)
@@ -258,7 +257,8 @@ class JohnnyDecimalOrganizer:
         if item_counter is None:
             item_counter = {}
             
-        area, category, category_name = self.categorize_file(file_path, content_description)
+        area, category, category_name = self.categorize_file(
+            file_path, content_description, suggested_area, suggested_category)
         
         # Get or create item number for this category
         if category not in item_counter:
@@ -266,9 +266,13 @@ class JohnnyDecimalOrganizer:
         else:
             item_counter[category] += 1
             
+        # Ensure we don't exceed Johnny.Decimal limits
+        if item_counter[category] > 99:
+            raise ValueError(f"Category {category} has reached maximum of 99 items")
+            
         item_number = f"{category}.{item_counter[category]:02d}"
         
-        # Create folder structure
+        # Create folder structure following Johnny.Decimal methodology
         area_name = f"{area}-{area+9} {self.areas[area]}"
         category_folder = f"{category} {category_name}"
         
@@ -278,24 +282,44 @@ class JohnnyDecimalOrganizer:
         original_name = os.path.splitext(os.path.basename(file_path))[0]
         file_ext = os.path.splitext(file_path)[1]
         
-        # Sanitize and create new filename
+        # Create meaningful filename based on content or original name
         if content_description:
-            # Use content description for more meaningful filename
-            filename_base = sanitize_filename(content_description, max_words=4)
+            filename_base = sanitize_filename(content_description, max_words=3)
         else:
-            filename_base = sanitize_filename(original_name, max_words=4)
+            filename_base = sanitize_filename(original_name, max_words=3)
             
         # Ensure we have a valid filename base
         if not filename_base or filename_base.strip() == "":
-            filename_base = "document"
+            filename_base = "item"
             
         new_filename = f"{item_number} {filename_base}{file_ext}"
         
         return folder_path, new_filename
 
+    def print_system_overview(self):
+        """Print an overview of the current Johnny.Decimal system setup."""
+        print("Johnny.Decimal System Overview")
+        print("=" * 40)
+        print(f"Total Areas: {len(self.areas)}/10")
+        print(f"Total Categories: {len(self.categories)}")
+        print()
+        
+        for area_num in sorted(self.areas.keys()):
+            area_name = self.areas[area_num]
+            print(f"{area_num}-{area_num+9} {area_name}")
+            
+            area_categories = self.get_categories_for_area(area_num)
+            for cat_num in sorted(area_categories.keys()):
+                cat_name = area_categories[cat_num]
+                print(f"  ├── {cat_num} {cat_name}")
+                print(f"  │   └── {cat_num}.01-{cat_num}.99 (items)")
+            print()
+
 
 def process_files_johnny_decimal(file_paths: List[str], output_path: str, 
                                 file_descriptions: Dict[str, str] = None,
+                                custom_areas: Optional[Dict[int, str]] = None,
+                                custom_categories: Optional[Dict[int, str]] = None,
                                 dry_run: bool = False, silent: bool = False, 
                                 log_file: str = None) -> List[Dict]:
     """
@@ -305,6 +329,8 @@ def process_files_johnny_decimal(file_paths: List[str], output_path: str,
         file_paths: List of file paths to organize
         output_path: Base output directory
         file_descriptions: Optional dictionary of file_path -> description
+        custom_areas: Optional custom area definitions
+        custom_categories: Optional custom category definitions
         dry_run: If True, don't actually move files
         silent: If True, suppress output
         log_file: Optional log file path
@@ -312,12 +338,21 @@ def process_files_johnny_decimal(file_paths: List[str], output_path: str,
     Returns:
         List of operation dictionaries
     """
-    organizer = JohnnyDecimalOrganizer()
+    organizer = JohnnyDecimalOrganizer(custom_areas, custom_categories)
     operations = []
     item_counters = {}  # Track item numbers per category
     
     if file_descriptions is None:
         file_descriptions = {}
+    
+    # Print system overview if not in silent mode
+    if not silent:
+        print("\n" + "="*60)
+        print("JOHNNY.DECIMAL SYSTEM ORGANIZATION")
+        print("="*60)
+        organizer.print_system_overview()
+        print("Processing files...")
+        print("="*60)
     
     for file_path in file_paths:
         # Skip hidden files
@@ -328,32 +363,46 @@ def process_files_johnny_decimal(file_paths: List[str], output_path: str,
         content_description = file_descriptions.get(file_path, "")
         
         # Generate Johnny.Decimal path
-        folder_path, new_filename = organizer.generate_johnny_decimal_path(
-            file_path, content_description, item_counters
-        )
-        
-        # Create full destination path
-        full_folder_path = os.path.join(output_path, folder_path)
-        destination_path = os.path.join(full_folder_path, new_filename)
-        
-        # Create operation record
-        operation = {
-            'source': file_path,
-            'destination': destination_path,
-            'link_type': 'hardlink',  # Default to hardlink
-            'folder_name': folder_path,
-            'new_file_name': new_filename
-        }
-        
-        operations.append(operation)
-        
-        # Log operation if not silent
-        if not silent:
-            message = f"Johnny.Decimal: {file_path} -> {folder_path}/{new_filename}"
+        try:
+            folder_path, new_filename = organizer.generate_johnny_decimal_path(
+                file_path, content_description, item_counters
+            )
+            
+            # Create full destination path
+            full_folder_path = os.path.join(output_path, folder_path)
+            destination_path = os.path.join(full_folder_path, new_filename)
+            
+            # Create operation record
+            operation = {
+                'source': file_path,
+                'destination': destination_path,
+                'link_type': 'hardlink',  # Default to hardlink
+                'folder_name': folder_path,
+                'new_file_name': new_filename
+            }
+            
+            operations.append(operation)
+            
+            # Log operation if not silent
+            if not silent:
+                message = f"J.D: {os.path.basename(file_path)} → {folder_path}/{new_filename}"
+                if log_file:
+                    with open(log_file, 'a') as f:
+                        f.write(message + '\n')
+                else:
+                    print(message)
+                    
+        except ValueError as e:
+            error_msg = f"Error processing {file_path}: {e}"
+            if not silent:
+                print(f"WARNING: {error_msg}")
             if log_file:
                 with open(log_file, 'a') as f:
-                    f.write(message + '\n')
-            else:
-                print(message)
+                    f.write(f"ERROR: {error_msg}\n")
+    
+    if not silent:
+        print("="*60)
+        print(f"Johnny.Decimal organization complete. {len(operations)} files processed.")
+        print("="*60)
     
     return operations

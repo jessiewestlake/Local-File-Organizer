@@ -2,93 +2,167 @@
 
 ## Overview
 
-The Johnny.Decimal system is a file organization methodology that uses a hierarchical numbering system to create structured, logical folder hierarchies. This implementation provides an optional organization mode in the Local File Organizer.
+The Johnny.Decimal system is a file organization methodology that provides a **framework** for organizing information using a structured hierarchical numbering system. The key insight is that it's not about predefined categories, but about giving users a systematic way to organize their own information.
+
+## Core Principles
+
+### 1. **Everything has a number**
+Every item in your system gets a unique Johnny.Decimal number that tells you exactly where it belongs.
+
+### 2. **Everything has one place**
+Nothing belongs in multiple places. Each item has exactly one correct location.
+
+### 3. **Numbers never change**
+Once you assign a number, it never changes. This creates stability and prevents organizational drift.
+
+### 4. **Three levels maximum**
+The system has exactly three levels - no more, no less:
+- **Areas** (10-19, 20-29, etc.)
+- **Categories** (11, 12, 13, etc.)
+- **Items** (11.01, 11.02, etc.)
+
+### 5. **Strict limits**
+- Maximum 10 areas (10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, 90-99)
+- Maximum 10 categories per area (11-19, 21-29, 31-39, etc.)
+- Maximum 100 items per category (11.01-11.99, 12.01-12.99, etc.)
 
 ## How It Works
 
 ### Structure Levels
 
 1. **Areas (10-19, 20-29, etc.)**
-   - Broad, top-level categories
-   - Each area covers 10 numbers (e.g., 10-19, 20-29)
-   - Maximum of 10 areas per system
+   - Broad, top-level categories that represent major areas of your life/work
+   - Each area covers exactly 10 numbers
+   - You define what each area represents based on YOUR needs
 
 2. **Categories (11, 12, 13, etc.)**
    - Subcategories within each area
    - Two-digit numbers within each area range
-   - Maximum of 10 categories per area
+   - You define what each category represents
 
 3. **Items (11.01, 11.02, etc.)**
-   - Individual files or documents
+   - Individual files, documents, or things
    - Decimal notation with category prefix
-   - Maximum of 100 items per category
+   - These are your actual files and documents
 
-### Predefined Areas
+### Example Structure (User-Defined)
 
-This implementation includes 9 predefined areas:
+Here's how someone might organize their personal system:
 
-- **10-19 Personal Management**: Finance, Health, Education, Legal, Travel
-- **20-29 Professional Work**: Projects, Reports, Presentations, Contracts
-- **30-39 Creative Projects**: Photography, Writing, Design, Music, Video, Art
-- **40-49 Reference Materials**: Documentation, Manuals, Research, Books
-- **50-59 Media Collection**: Images, Audio, Video, Graphics
-- **60-69 Technical Resources**: Code, Configurations, Databases, Software
-- **70-79 Communication**: Emails, Messages, Social Media, Correspondence
-- **80-89 Archives**: Old Projects, Backups, Historical Data
-- **90-99 Miscellaneous**: Temporary, Downloads, Uncategorized
+```
+10-19 Life Admin
+├── 11 Banking
+│   ├── 11.01 Bank statements
+│   ├── 11.02 Account setup documents
+│   └── 11.03 Investment records
+├── 12 Tax
+│   ├── 12.01 Tax returns
+│   ├── 12.02 Receipts
+│   └── 12.03 Tax planning documents
+└── 13 Insurance
+    ├── 13.01 Car insurance
+    ├── 13.02 Health insurance
+    └── 13.03 Home insurance
 
-## Automatic Categorization
+20-29 Work
+├── 21 Current Projects
+│   ├── 21.01 Project Alpha documents
+│   ├── 21.02 Project Beta files
+│   └── 21.03 Project Gamma resources
+├── 22 Administration
+│   ├── 22.01 Timesheets
+│   ├── 22.02 Expense reports
+│   └── 22.03 HR documents
+└── 23 Development
+    ├── 23.01 Code repositories
+    ├── 23.02 Technical documentation
+    └── 23.03 Development tools
+```
 
-The system automatically categorizes files based on:
+## Key Differences from Traditional Systems
 
-1. **Content Analysis**: AI-generated descriptions when available
-2. **File Extensions**: Common file types mapped to appropriate categories
-3. **Filename Keywords**: Recognizable terms in filenames
-4. **Fallback Rules**: Default categories for unrecognized content
+### User-Defined Structure
+Unlike other filing systems, Johnny.Decimal doesn't tell you what your categories should be. YOU decide:
+- What your areas represent
+- What categories go in each area
+- How to organize your specific content
 
-### Example Categorizations
+### Methodology Over Content
+The system provides the **method** (the numbering structure and rules), not the **content** (specific categories for different types of files).
 
-| File Type | Example | Suggested Category |
-|-----------|---------|-------------------|
-| Bank statement | `bank_statement.pdf` | 11 Finance |
-| Medical record | `health_report.pdf` | 12 Health |
-| Photo | `vacation_photo.jpg` | 51 Images or 15 Travel |
-| Code file | `script.py` | 61 Code |
-| Presentation | `project.pptx` | 23 Presentations |
+### Scalable but Limited
+The limits (10 areas, 10 categories per area, 100 items per category) force you to think clearly about organization while providing room to grow.
 
 ## Usage in Local File Organizer
 
-1. Run the Local File Organizer application
-2. Select mode **4. By Johnny.Decimal System**
-3. The system will:
-   - Analyze your files
-   - Assign appropriate Johnny.Decimal numbers
-   - Create the hierarchical folder structure
-   - Generate meaningful filenames with numbers
+### Automatic Suggestions
+The Local File Organizer implementation:
+1. Provides a **default example structure** to get you started
+2. Makes **intelligent suggestions** based on file content and types
+3. Allows you to **customize** areas and categories for your needs
+4. Follows **strict Johnny.Decimal rules** to maintain system integrity
+
+### Customization
+You can modify the areas and categories to match your specific needs:
+- Change area names to reflect your life/work domains
+- Add categories within areas as needed
+- Let the system suggest placements based on file analysis
+
+### Example Output Structure
+```
+organized_folder/
+├── 10-19 Life Admin/
+│   ├── 11 Banking/
+│   │   ├── 11.01 bank_statement_december.pdf
+│   │   └── 11.02 investment_portfolio.pdf
+│   └── 12 Tax/
+│       ├── 12.01 tax_return_2024.pdf
+│       └── 12.02 receipts_business.pdf
+├── 20-29 Work/
+│   └── 21 Current Projects/
+│       ├── 21.01 project_proposal.docx
+│       └── 21.02 meeting_notes.txt
+└── 40-49 Resources/
+    └── 41 Documentation/
+        ├── 41.01 system_manual.pdf
+        └── 41.02 user_guide.pdf
+```
 
 ## Benefits
 
-- **Consistent Structure**: Every file has a logical place
-- **Easy Navigation**: Hierarchical numbering makes finding files intuitive
-- **Scalable**: System grows logically as you add more files
-- **Cross-Platform**: Works on any operating system
-- **Future-Proof**: Numbers don't change, maintaining organization over time
+### Mental Clarity
+- Forces you to think about information architecture
+- Prevents endless sub-folder hierarchies
+- Creates clear boundaries and decisions
 
-## Customization
+### Practical Organization
+- Easy to remember where things are
+- Quick to find specific items by number
+- Scales without becoming unwieldy
 
-The system can be customized by modifying the `johnny_decimal_processing.py` file:
-
-- Add new areas or categories
-- Modify keyword mappings
-- Adjust file extension associations
-- Change automatic categorization rules
+### Long-term Stability
+- Numbers don't change, so your system doesn't drift
+- Works across different computer systems and platforms
+- Future-proof organizational method
 
 ## Best Practices
 
-1. **Consistency**: Always use the same numbering system
-2. **Meaningful Names**: Combine numbers with descriptive names
-3. **Regular Review**: Periodically review and reorganize if needed
-4. **Documentation**: Keep a reference of your area/category assignments
-5. **Backup**: Always backup your organized files
+### Starting Out
+1. **Begin with broad areas** that represent major domains of your life/work
+2. **Add categories gradually** as you identify natural groupings
+3. **Don't pre-fill everything** - let categories emerge organically
+4. **Use descriptive names** for areas and categories that make sense to you
 
-For more information about the Johnny.Decimal system concept, visit: https://johnnydecimal.com/
+### Maintaining the System
+1. **Stick to the limits** - if you need more than 10 categories in an area, consider splitting the area
+2. **Be consistent** with naming conventions
+3. **Document your decisions** so you remember why you organized things a certain way
+4. **Review periodically** but resist the urge to constantly reorganize
+
+### Common Mistakes to Avoid
+1. **Don't create deep hierarchies** - stick to exactly three levels
+2. **Don't duplicate items** - everything has exactly one place
+3. **Don't change numbers** once assigned
+4. **Don't overthink it** - start simple and evolve
+
+For more information about the official Johnny.Decimal methodology, visit: https://johnnydecimal.com/

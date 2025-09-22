@@ -74,33 +74,40 @@ Organizes files into folders based on their creation or modification dates.
 Groups files by their file extensions and types (documents, images, audio, etc.).
 
 ### 4. By Johnny.Decimal System 📊
-Implements the Johnny.Decimal hierarchical numbering system for structured file organization:
+Implements the Johnny.Decimal organizational methodology - a systematic approach to information organization:
 
-**Structure:**
-- **Areas (10-19, 20-29, etc.)**: Top-level categories
-- **Categories (11, 12, 13, etc.)**: Subcategories within areas
-- **Items (11.01, 11.02, etc.)**: Individual files
+**Core Principles:**
+- **3 levels only**: Areas → Categories → Items
+- **Strict limits**: Max 10 areas, 10 categories per area, 100 items per category
+- **Unique numbers**: Everything gets exactly one number that never changes
+- **User-defined structure**: You define what areas and categories mean for your needs
+
+**How it works:**
+- **Areas (10-19, 20-29, etc.)**: Major life/work domains you define
+- **Categories (11, 12, 13, etc.)**: Subcategories within each area  
+- **Items (11.01, 11.02, etc.)**: Your actual files with unique numbers
 
 **Example Johnny.Decimal Structure:**
 ```
 organized_folder/
-├── 10-19 Personal Management/
-│   ├── 11 Finance/
+├── 10-19 Life Admin/
+│   ├── 11 Banking/
 │   │   ├── 11.01 bank_statement_december.pdf
-│   │   └── 11.02 tax_return_2024.pdf
-│   ├── 12 Health/
-│   │   └── 12.01 insurance_policy.pdf
-│   └── 15 Travel/
-│       └── 15.01 vacation_photos.jpg
-├── 20-29 Professional Work/
-│   ├── 21 Projects/
-│   │   └── 21.01 quarterly_report.docx
-│   └── 23 Presentations/
-│       └── 23.01 client_presentation.pptx
-└── 60-69 Technical Resources/
-    └── 61 Code/
-        └── 61.01 data_analysis_script.py
+│   │   └── 11.02 investment_portfolio.pdf
+│   └── 12 Tax/
+│       ├── 12.01 tax_return_2024.pdf
+│       └── 12.02 business_receipts.pdf
+├── 20-29 Work/
+│   └── 21 Current Projects/
+│       ├── 21.01 project_proposal.docx
+│       └── 21.02 meeting_notes.txt
+└── 40-49 Resources/
+    └── 41 Documentation/
+        ├── 41.01 user_manual.pdf
+        └── 41.02 technical_guide.pdf
 ```
+
+This system provides a **framework for organization** rather than predefined categories, allowing you to create a personalized, scalable filing system that grows with your needs while maintaining structure and findability.
 
 ## Updates 🚀
 
