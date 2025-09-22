@@ -60,7 +60,57 @@ After:
     └── google_cloud_agent_development_hackathon.mp4
 ```
 
+## Organization Modes 🗂️
+
+The Local File Organizer supports four different organization modes:
+
+### 1. By Content (AI-Powered)
+Uses AI to analyze file content and create meaningful folder structures based on topics and themes.
+
+### 2. By Date  
+Organizes files into folders based on their creation or modification dates.
+
+### 3. By Type
+Groups files by their file extensions and types (documents, images, audio, etc.).
+
+### 4. By Johnny.Decimal System 📊
+Implements the Johnny.Decimal hierarchical numbering system for structured file organization:
+
+**Structure:**
+- **Areas (10-19, 20-29, etc.)**: Top-level categories
+- **Categories (11, 12, 13, etc.)**: Subcategories within areas
+- **Items (11.01, 11.02, etc.)**: Individual files
+
+**Example Johnny.Decimal Structure:**
+```
+organized_folder/
+├── 10-19 Personal Management/
+│   ├── 11 Finance/
+│   │   ├── 11.01 bank_statement_december.pdf
+│   │   └── 11.02 tax_return_2024.pdf
+│   ├── 12 Health/
+│   │   └── 12.01 insurance_policy.pdf
+│   └── 15 Travel/
+│       └── 15.01 vacation_photos.jpg
+├── 20-29 Professional Work/
+│   ├── 21 Projects/
+│   │   └── 21.01 quarterly_report.docx
+│   └── 23 Presentations/
+│       └── 23.01 client_presentation.pptx
+└── 60-69 Technical Resources/
+    └── 61 Code/
+        └── 61.01 data_analysis_script.py
+```
+
 ## Updates 🚀
+
+**[2025/01] Johnny.Decimal System Added**:
+* Added optional Johnny.Decimal organization mode for hierarchical file management
+* Implements the Johnny.Decimal numbering system (Areas: 10-19, Categories: 11-19, Items: 11.01-11.99)
+* Creates structured folder hierarchies with meaningful categorization
+* Supports 9 main areas: Personal Management, Professional Work, Creative Projects, Reference Materials, Media Collection, Technical Resources, Communication, Archives, and Miscellaneous
+* Works with AI-generated content descriptions for better categorization
+
 **[2025/05] v0.0.3**:
 * Major Backend Change: Switched AI inference from Nexa SDK to gemma3 and openai-whisper for local LLM/VLM processing. 
 * Enhanced Text Processing: Integrated MarkItDown for robust conversion of various text file types (DOCX, PDF, PPTX, etc.) to Markdown before AI analysis. 
@@ -89,7 +139,7 @@ Please update the project by deleting the original project folder and reinstalli
 - [x] ebook format support
 - [x] audio file support
 - [x] video file support
-- [ ] Implement best practices like Johnny Decimal
+- [x] Implement best practices like Johnny Decimal
 - [x] Check file duplication and more for pre-processing sort file-> using https://github.com/tfeldmann/organize 
 - [ ] Dockerfile for easier installation
 
