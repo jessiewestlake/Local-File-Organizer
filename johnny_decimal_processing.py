@@ -19,9 +19,9 @@ Key changes from the standard layout:
 - Usable IDs: .10-99 (instead of .11-99)
 
 Core Principles (unchanged):
-- Areas (10-19, 20-29, etc.): Broad areas of your life (max 9)
-- Categories (10, 11, 12, etc.): Collections of similar things (max 10 per area)  
-- IDs (10.10, 10.11, etc.): Individual items/projects (max 90 per category)
+- Areas (10, 20, 30, ..., 90): Broad areas of your life (max 9; 10, 20, ..., 90)
+- Categories (A0-A9, i.e., 10-19, 20-29, ..., 90-99): Collections of similar things (max 10 per area)
+- IDs (.10-.99, e.g., 10.10, 10.11, ..., 90.99): Individual items/projects (max 90 per category)
 - The JDex (index): Central record of every ID - this IS your system
 - Numbers never change once assigned
 - Everything has exactly one place
