@@ -74,40 +74,49 @@ Organizes files into folders based on their creation or modification dates.
 Groups files by their file extensions and types (documents, images, audio, etc.).
 
 ### 4. By Johnny.Decimal System 📊
-Implements the Johnny.Decimal organizational methodology - a systematic approach to information organization:
+Implements the official Johnny.Decimal methodology - a system to organize your life:
 
-**Core Principles:**
-- **3 levels only**: Areas → Categories → Items
-- **Strict limits**: Max 10 areas, 10 categories per area, 100 items per category
-- **Unique numbers**: Everything gets exactly one number that never changes
-- **User-defined structure**: You define what areas and categories mean for your needs
+**Core Goal:** Find things quickly, with more confidence, and less stress.
+
+**What it organizes:** Everything - files, email, notes, digital accounts, physical items.
 
 **How it works:**
-- **Areas (10-19, 20-29, etc.)**: Major life/work domains you define
-- **Categories (11, 12, 13, etc.)**: Subcategories within each area  
-- **Items (11.01, 11.02, etc.)**: Your actual files with unique numbers
+- **Areas (10-19, 20-29, etc.)**: Broad areas of your life (max 10)
+- **Categories (11, 12, 13, etc.)**: Collections of similar things (max 10 per area)  
+- **IDs (11.01, 11.02, etc.)**: Individual items/projects (max 100 per category)
+
+**Key Principles:**
+- Numbers never change once assigned
+- Everything has exactly one place
+- Maximum 3 levels of hierarchy
+- The JDex (index) in your notes app IS your system
 
 **Example Johnny.Decimal Structure:**
 ```
 organized_folder/
-├── 10-19 Life Admin/
-│   ├── 11 Banking/
-│   │   ├── 11.01 bank_statement_december.pdf
-│   │   └── 11.02 investment_portfolio.pdf
-│   └── 12 Tax/
-│       ├── 12.01 tax_return_2024.pdf
-│       └── 12.02 business_receipts.pdf
+├── 10-19 Life admin/
+│   ├── 11 Me/
+│   │   ├── 11.01 passport_renewal.pdf
+│   │   └── 11.02 health_insurance.pdf
+│   ├── 12 House/
+│   │   ├── 12.01 mortgage_documents.pdf
+│   │   └── 12.02 utilities_setup.pdf
+│   └── 15 Travel/
+│       ├── 15.01 trip_to_japan.pdf
+│       └── 15.02 weekend_paris.pdf
 ├── 20-29 Work/
-│   └── 21 Current Projects/
-│       ├── 21.01 project_proposal.docx
+│   └── 21 Current work/
+│       ├── 21.01 project_alpha.docx
 │       └── 21.02 meeting_notes.txt
-└── 40-49 Resources/
-    └── 41 Documentation/
-        ├── 41.01 user_manual.pdf
-        └── 41.02 technical_guide.pdf
+└── 30-39 Projects/
+    └── 31 Active/
+        ├── 31.01 learning_guitar.md
+        └── 31.02 home_automation.py
 ```
 
-This system provides a **framework for organization** rather than predefined categories, allowing you to create a personalized, scalable filing system that grows with your needs while maintaining structure and findability.
+**The JDex (Index):** The system creates a foundation for your Johnny.Decimal index - a central record kept in your notes app (Bear, Obsidian, etc.) that tracks where everything is across your entire digital life. This becomes your system's memory and search interface.
+
+Based on the official methodology from [johnnydecimal.com](https://johnnydecimal.com/)
 
 ## Updates 🚀
 

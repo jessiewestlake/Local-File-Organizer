@@ -1,30 +1,24 @@
 """
 Johnny.Decimal System Implementation for Local File Organizer
 
-The Johnny.Decimal system is an organizational methodology with these core principles:
-- Areas: 10-19, 20-29, 30-39, etc. (10 possible areas maximum)
-- Categories: 11-19, 21-29, 31-39, etc. (10 categories per area maximum)  
-- Items: 11.01-11.99, 12.01-12.99, etc. (100 items per category maximum)
+Based on the official Johnny.Decimal methodology from https://johnnydecimal.com/
 
-Key principles:
-- Everything has one place and one unique number
+The Johnny.Decimal system is designed to help you find things quickly, 
+with more confidence, and less stress. It's not just about files - it's 
+about organizing everything in your life.
+
+Core Principles:
+- Areas (10-19, 20-29, etc.): Broad areas of your life (max 10)
+- Categories (11, 12, 13, etc.): Collections of similar things (max 10 per area)  
+- IDs (11.01, 11.02, etc.): Individual items/projects (max 100 per category)
+- The JDex (index): Central record of every ID - this IS your system
 - Numbers never change once assigned
-- Maximum 3 levels of hierarchy (Area/Category/Item)
-- User defines their own organizational structure
-- System provides the framework, not predefined categories
+- Everything has exactly one place
+- Limit choices to reduce decision fatigue
 
-Example structure:
-10-19 Life Admin
-├── 11 Banking
-│   ├── 11.01 Bank statements
-│   └── 11.02 Account setup
-├── 12 Tax
-│   ├── 12.01 Tax returns
-│   └── 12.02 Receipts
-└── 13 Insurance
-    └── 13.01 Policies
+The goal: Find things quickly, with confidence, and less stress.
 
-Reference: https://johnnydecimal.com/
+Official site: https://johnnydecimal.com/
 """
 
 import os
@@ -37,35 +31,48 @@ class JohnnyDecimalOrganizer:
     """
     Johnny.Decimal system organizer implementing the official methodology.
     
-    Provides the structural framework while allowing users to define their own
-    areas and categories based on their specific organizational needs.
+    This system helps you organize your entire life, not just files.
+    The index (JDex) is the central component that makes everything work.
     """
     
     def __init__(self, custom_areas: Optional[Dict[int, str]] = None, 
                  custom_categories: Optional[Dict[int, str]] = None):
         """
-        Initialize the organizer with optional custom areas and categories.
+        Initialize with minimal example structure that users should customize.
         
         Args:
             custom_areas: Dict of area_number -> area_name (10, 20, 30, etc.)
             custom_categories: Dict of category_number -> category_name (11, 12, etc.)
         """
-        # Define default areas if none provided - these are just examples
-        # Users should customize these based on their needs
+        # Start with minimal example areas - users should customize these
         self.areas = custom_areas or {
-            10: "Life Admin",      # Personal administration
+            10: "Life admin",      # The stuff we all manage day-to-day
             20: "Work",            # Professional activities  
-            30: "Projects",        # Active projects
-            40: "Resources",       # Reference materials
-            50: "Archive",         # Historical/completed items
+            30: "Projects",        # Active projects and interests
         }
         
         # Validate areas follow Johnny.Decimal rules
         self._validate_areas()
         
-        # Define default categories if none provided - these are examples
-        # Users should customize based on their specific area contents
-        self.categories = custom_categories or self._create_default_categories()
+        # Minimal example categories - users should add their own
+        self.categories = custom_categories or {
+            # Life admin (10-19)
+            11: "Me",              # Personal documents, health, etc.
+            12: "House",           # Home-related stuff
+            13: "Money",           # Financial matters
+            14: "Online",          # Digital accounts, subscriptions
+            15: "Travel",          # Trips and travel documents
+            
+            # Work (20-29) 
+            21: "Current work",    # Active work projects
+            22: "Admin",           # Work administration
+            
+            # Projects (30-39)
+            31: "Active",          # Current personal projects
+        }
+        
+        # Track IDs to prevent duplicates (like a simple JDex)
+        self.assigned_ids = set()
         
     def _validate_areas(self):
         """Validate that areas follow Johnny.Decimal rules."""
@@ -75,43 +82,6 @@ class JohnnyDecimalOrganizer:
         for area_num in self.areas.keys():
             if area_num % 10 != 0 or area_num < 10 or area_num > 90:
                 raise ValueError(f"Area number {area_num} invalid. Must be 10, 20, 30, ..., 90")
-    
-    def _create_default_categories(self) -> Dict[int, str]:
-        """Create default categories for defined areas."""
-        categories = {}
-        
-        # Only create a few example categories, not all possible ones
-        # Users should extend this based on their needs
-        for area_num, area_name in self.areas.items():
-            if area_num == 10:  # Life Admin
-                categories.update({
-                    11: "Banking",
-                    12: "Tax", 
-                    13: "Insurance"
-                })
-            elif area_num == 20:  # Work
-                categories.update({
-                    21: "Projects",
-                    22: "Admin",
-                    23: "Development"
-                })
-            elif area_num == 30:  # Projects  
-                categories.update({
-                    31: "Active",
-                    32: "Planning"
-                })
-            elif area_num == 40:  # Resources
-                categories.update({
-                    41: "Documentation",
-                    42: "Templates"
-                })
-            elif area_num == 50:  # Archive
-                categories.update({
-                    51: "Completed",
-                    52: "Historical"
-                })
-        
-        return categories
     
     def get_available_areas(self) -> Dict[int, str]:
         """Get all available areas."""
@@ -136,173 +106,138 @@ class JohnnyDecimalOrganizer:
         
         self.categories[category_number] = category_name
 
-    def categorize_file_intelligently(self, file_path: str, content_description: str = "") -> Tuple[int, int, str]:
+    def suggest_categorization(self, file_path: str, content_description: str = "") -> Tuple[int, int, str]:
         """
-        Intelligently suggest a category for a file based on content and type.
+        Suggest categorization based on content, but user should decide.
         
-        Returns:
-            Tuple of (area_number, category_number, category_name)
+        This follows the Johnny.Decimal philosophy that categorization requires
+        thought and consideration - automation shouldn't make all the decisions.
         """
         file_name = os.path.basename(file_path).lower()
         file_ext = os.path.splitext(file_path)[1].lower()
         content_lower = content_description.lower()
         
-        # Simple keyword-based suggestions for common file types
-        keyword_suggestions = {
-            # Life Admin (10-19)
-            "bank": 11, "statement": 11, "account": 11, "finance": 11,
-            "tax": 12, "return": 12, "receipt": 12,
-            "insurance": 13, "policy": 13, "claim": 13,
+        # Simple suggestions based on common patterns
+        suggestions = {
+            # Life admin suggestions
+            "bank": 13, "money": 13, "finance": 13, "tax": 13, "insurance": 13,
+            "health": 11, "medical": 11, "passport": 11, "personal": 11,
+            "house": 12, "home": 12, "utilities": 12, "mortgage": 12,
+            "travel": 15, "trip": 15, "vacation": 15, "flight": 15, "hotel": 15,
+            "subscription": 14, "account": 14, "login": 14, "online": 14,
             
-            # Work (20-29) 
-            "project": 21, "proposal": 21, "plan": 21,
-            "admin": 22, "form": 22, "process": 22,
-            "code": 23, "develop": 23, "script": 23,
+            # Work suggestions
+            "work": 21, "project": 21, "meeting": 22, "admin": 22,
             
-            # Projects (30-39)
-            "active": 31, "current": 31, "ongoing": 31,
-            "planning": 32, "idea": 32, "draft": 32,
-            
-            # Resources (40-49)
-            "manual": 41, "guide": 41, "documentation": 41, "doc": 41,
-            "template": 42, "format": 42, "example": 42,
-            
-            # Archive (50-59)
-            "old": 51, "completed": 51, "finished": 51,
-            "history": 52, "backup": 52, "archive": 52
+            # Personal projects
+            "hobby": 31, "learning": 31, "creative": 31, "side": 31,
         }
         
         # Check content and filename for keywords
         text_to_check = f"{content_lower} {file_name}"
-        for keyword, suggested_category in keyword_suggestions.items():
+        for keyword, suggested_category in suggestions.items():
             if keyword in text_to_check and suggested_category in self.categories:
                 area = (suggested_category // 10) * 10
                 return area, suggested_category, self.categories[suggested_category]
         
-        # File extension based suggestions
-        extension_suggestions = {
-            # Documentation
-            ".pdf": 41, ".doc": 41, ".docx": 41, ".txt": 41, ".md": 41,
-            # Templates/Formats  
-            ".xlsx": 42, ".xls": 42, ".pptx": 42, ".ppt": 42,
-            # Code/Development
-            ".py": 23, ".js": 23, ".html": 23, ".css": 23, ".json": 23,
-            # Archives
-            ".zip": 52, ".rar": 52, ".tar": 52, ".gz": 52
-        }
+        # Default to first available category
+        if self.categories:
+            first_category = min(self.categories.keys())
+            area = (first_category // 10) * 10
+            return area, first_category, self.categories[first_category]
         
-        if file_ext in extension_suggestions:
-            suggested_category = extension_suggestions[file_ext]
-            if suggested_category in self.categories:
-                area = (suggested_category // 10) * 10
-                return area, suggested_category, self.categories[suggested_category]
-        
-        # Default to first category in first area
-        first_area = min(self.areas.keys())
-        area_categories = self.get_categories_for_area(first_area)
-        if area_categories:
-            first_category = min(area_categories.keys())
-            return first_area, first_category, area_categories[first_category]
-        
-        # Fallback
-        return 10, 11, "Uncategorized"
+        # Ultimate fallback
+        return 10, 11, "Me"
 
-    def categorize_file(self, file_path: str, content_description: str = "", 
-                       suggested_area: Optional[int] = None, 
-                       suggested_category: Optional[int] = None) -> Tuple[int, int, str]:
+    def get_next_available_id(self, category: int) -> str:
         """
-        Categorize a file into Johnny.Decimal system.
-        
-        Args:
-            file_path: Path to the file
-            content_description: AI-generated description of file content
-            suggested_area: User-suggested area number (optional)
-            suggested_category: User-suggested category number (optional)
-            
-        Returns:
-            Tuple of (area_number, category_number, category_name)
+        Get the next available ID in a category.
+        In a real system, this would consult the JDex.
         """
-        # If user provided specific suggestions, use them
-        if suggested_category and suggested_category in self.categories:
-            area = (suggested_category // 10) * 10
-            return area, suggested_category, self.categories[suggested_category]
+        # Find highest existing ID in this category
+        max_id = 0
+        for assigned_id in self.assigned_ids:
+            if assigned_id.startswith(f"{category}."):
+                try:
+                    id_num = int(assigned_id.split('.')[1])
+                    max_id = max(max_id, id_num)
+                except (ValueError, IndexError):
+                    continue
         
-        if suggested_area and suggested_area in self.areas:
-            # Find first available category in suggested area
-            area_categories = self.get_categories_for_area(suggested_area)
-            if area_categories:
-                first_category = min(area_categories.keys())
-                return suggested_area, first_category, area_categories[first_category]
-        
-        # Otherwise use intelligent categorization
-        return self.categorize_file_intelligently(file_path, content_description)
-
-    def generate_johnny_decimal_path(self, file_path: str, content_description: str = "",
-                                   item_counter: Dict[int, int] = None,
-                                   suggested_area: Optional[int] = None,
-                                   suggested_category: Optional[int] = None) -> Tuple[str, str]:
-        """
-        Generate Johnny.Decimal path for a file following official methodology.
-        
-        Args:
-            file_path: Original file path
-            content_description: AI-generated description of file content
-            item_counter: Dictionary to track item numbers per category
-            suggested_area: User-suggested area number (optional)
-            suggested_category: User-suggested category number (optional)
-            
-        Returns:
-            Tuple of (folder_path, new_filename)
-        """
-        if item_counter is None:
-            item_counter = {}
-            
-        area, category, category_name = self.categorize_file(
-            file_path, content_description, suggested_area, suggested_category)
-        
-        # Get or create item number for this category
-        if category not in item_counter:
-            item_counter[category] = 1
-        else:
-            item_counter[category] += 1
-            
-        # Ensure we don't exceed Johnny.Decimal limits
-        if item_counter[category] > 99:
+        next_id = max_id + 1
+        if next_id > 99:
             raise ValueError(f"Category {category} has reached maximum of 99 items")
-            
-        item_number = f"{category}.{item_counter[category]:02d}"
         
-        # Create folder structure following Johnny.Decimal methodology
+        return f"{category}.{next_id:02d}"
+
+    def assign_id(self, file_path: str, content_description: str = "",
+                  suggested_category: Optional[int] = None) -> Tuple[str, str, str]:
+        """
+        Assign a Johnny.Decimal ID to a file.
+        
+        In the official system, you would:
+        1. Open your JDex (index) in your notes app
+        2. Find the right category
+        3. Create a new note with the next ID
+        4. Then create the file/folder
+        
+        Returns: (id, folder_path, description)
+        """
+        if suggested_category and suggested_category in self.categories:
+            category = suggested_category
+            area = (category // 10) * 10
+            category_name = self.categories[category]
+        else:
+            area, category, category_name = self.suggest_categorization(file_path, content_description)
+        
+        # Get next available ID
+        new_id = self.get_next_available_id(category)
+        self.assigned_ids.add(new_id)
+        
+        # Create folder structure following official methodology
         area_name = f"{area}-{area+9} {self.areas[area]}"
         category_folder = f"{category} {category_name}"
-        
         folder_path = os.path.join(area_name, category_folder)
         
-        # Generate filename with Johnny.Decimal number
-        original_name = os.path.splitext(os.path.basename(file_path))[0]
-        file_ext = os.path.splitext(file_path)[1]
-        
-        # Create meaningful filename based on content or original name
+        # Create meaningful description
         if content_description:
-            filename_base = sanitize_filename(content_description, max_words=3)
+            description = sanitize_filename(content_description, max_words=4)
         else:
-            filename_base = sanitize_filename(original_name, max_words=3)
-            
-        # Ensure we have a valid filename base
-        if not filename_base or filename_base.strip() == "":
-            filename_base = "item"
-            
-        new_filename = f"{item_number} {filename_base}{file_ext}"
+            original_name = os.path.splitext(os.path.basename(file_path))[0]
+            description = sanitize_filename(original_name, max_words=4)
         
-        return folder_path, new_filename
+        if not description:
+            description = "item"
+            
+        return new_id, folder_path, description
+
+    def generate_jdex_entry(self, id: str, description: str, file_path: str) -> Dict[str, str]:
+        """
+        Generate a JDex (index) entry for this ID.
+        
+        In the official system, this would be a note in Bear, Obsidian, etc.
+        The JDex IS your Johnny.Decimal system.
+        """
+        return {
+            'id': id,
+            'title': f"{id} {description}",
+            'location': f"File system: {file_path}",
+            'description': description,
+            'created': 'Today',  # In real system, would be actual date
+            'notes': 'Add any additional notes about this item here.'
+        }
 
     def print_system_overview(self):
         """Print an overview of the current Johnny.Decimal system setup."""
         print("Johnny.Decimal System Overview")
         print("=" * 40)
-        print(f"Total Areas: {len(self.areas)}/10")
-        print(f"Total Categories: {len(self.categories)}")
+        print("Goal: Find things quickly, with confidence, and less stress")
         print()
+        print(f"Areas: {len(self.areas)}/10 (broad areas of your life)")
+        print(f"Categories: {len(self.categories)} (collections of similar things)")  
+        print(f"Assigned IDs: {len(self.assigned_ids)} (individual items)")
+        print()
+        print("Structure:")
         
         for area_num in sorted(self.areas.keys()):
             area_name = self.areas[area_num]
@@ -312,8 +247,19 @@ class JohnnyDecimalOrganizer:
             for cat_num in sorted(area_categories.keys()):
                 cat_name = area_categories[cat_num]
                 print(f"  ├── {cat_num} {cat_name}")
-                print(f"  │   └── {cat_num}.01-{cat_num}.99 (items)")
+                
+                # Show assigned IDs in this category
+                category_ids = [id for id in self.assigned_ids if id.startswith(f"{cat_num}.")]
+                if category_ids:
+                    for assigned_id in sorted(category_ids):
+                        print(f"  │   ├── {assigned_id}")
+                else:
+                    print(f"  │   └── (No IDs assigned yet)")
             print()
+        
+        print("Remember: The JDex (index) in your notes app is the central")
+        print("record of your system. It tracks where everything is across")
+        print("your entire digital life - files, emails, notes, everything!")
 
 
 def process_files_johnny_decimal(file_paths: List[str], output_path: str, 
@@ -323,24 +269,16 @@ def process_files_johnny_decimal(file_paths: List[str], output_path: str,
                                 dry_run: bool = False, silent: bool = False, 
                                 log_file: str = None) -> List[Dict]:
     """
-    Process files using Johnny.Decimal organization system.
+    Process files using official Johnny.Decimal methodology.
     
-    Args:
-        file_paths: List of file paths to organize
-        output_path: Base output directory
-        file_descriptions: Optional dictionary of file_path -> description
-        custom_areas: Optional custom area definitions
-        custom_categories: Optional custom category definitions
-        dry_run: If True, don't actually move files
-        silent: If True, suppress output
-        log_file: Optional log file path
-        
-    Returns:
-        List of operation dictionaries
+    Note: In the real Johnny.Decimal system, you would:
+    1. First create entries in your JDex (notes app)
+    2. Then create the file/folder structure
+    
+    This implementation focuses on the file organization aspect.
     """
     organizer = JohnnyDecimalOrganizer(custom_areas, custom_categories)
     operations = []
-    item_counters = {}  # Track item numbers per category
     
     if file_descriptions is None:
         file_descriptions = {}
@@ -348,10 +286,13 @@ def process_files_johnny_decimal(file_paths: List[str], output_path: str,
     # Print system overview if not in silent mode
     if not silent:
         print("\n" + "="*60)
-        print("JOHNNY.DECIMAL SYSTEM ORGANIZATION")
+        print("JOHNNY.DECIMAL FILE ORGANIZATION")
+        print("Based on the official methodology from johnnydecimal.com")
         print("="*60)
         organizer.print_system_overview()
-        print("Processing files...")
+        print("\nProcessing files...")
+        print("Note: In a real Johnny.Decimal system, you would create")
+        print("these IDs in your JDex (notes app) first, then organize files.")
         print("="*60)
     
     for file_path in file_paths:
@@ -362,33 +303,42 @@ def process_files_johnny_decimal(file_paths: List[str], output_path: str,
         # Get content description if available
         content_description = file_descriptions.get(file_path, "")
         
-        # Generate Johnny.Decimal path
         try:
-            folder_path, new_filename = organizer.generate_johnny_decimal_path(
-                file_path, content_description, item_counters
-            )
+            # Assign Johnny.Decimal ID
+            jd_id, folder_path, description = organizer.assign_id(file_path, content_description)
+            
+            # Create filename with proper Johnny.Decimal format
+            file_ext = os.path.splitext(file_path)[1]
+            new_filename = f"{jd_id} {description}{file_ext}"
             
             # Create full destination path
             full_folder_path = os.path.join(output_path, folder_path)
             destination_path = os.path.join(full_folder_path, new_filename)
             
+            # Generate JDex entry for reference
+            jdex_entry = organizer.generate_jdex_entry(jd_id, description, destination_path)
+            
             # Create operation record
             operation = {
                 'source': file_path,
                 'destination': destination_path,
-                'link_type': 'hardlink',  # Default to hardlink
+                'link_type': 'hardlink',
                 'folder_name': folder_path,
-                'new_file_name': new_filename
+                'new_file_name': new_filename,
+                'jd_id': jd_id,
+                'jdex_entry': jdex_entry
             }
             
             operations.append(operation)
             
             # Log operation if not silent
             if not silent:
-                message = f"J.D: {os.path.basename(file_path)} → {folder_path}/{new_filename}"
+                message = f"J.D: {os.path.basename(file_path)} → {jd_id} {description}"
                 if log_file:
                     with open(log_file, 'a') as f:
                         f.write(message + '\n')
+                        f.write(f"JDex: {jdex_entry['title']}\n")
+                        f.write(f"Location: {jdex_entry['location']}\n\n")
                 else:
                     print(message)
                     
@@ -402,7 +352,13 @@ def process_files_johnny_decimal(file_paths: List[str], output_path: str,
     
     if not silent:
         print("="*60)
-        print(f"Johnny.Decimal organization complete. {len(operations)} files processed.")
+        print(f"Johnny.Decimal file organization complete!")
+        print(f"Processed {len(operations)} files into Johnny.Decimal structure.")
+        print()
+        print("NEXT STEPS:")
+        print("1. Create a JDex (index) in your notes app (Bear, Obsidian, etc.)")
+        print("2. Add an entry for each ID to track locations across your digital life")
+        print("3. The JDex becomes your system's memory and search interface")
         print("="*60)
     
     return operations

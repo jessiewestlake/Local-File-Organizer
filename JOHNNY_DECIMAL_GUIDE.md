@@ -2,167 +2,221 @@
 
 ## Overview
 
-The Johnny.Decimal system is a file organization methodology that provides a **framework** for organizing information using a structured hierarchical numbering system. The key insight is that it's not about predefined categories, but about giving users a systematic way to organize their own information.
+The Johnny.Decimal system is designed to help you **find things quickly, with more confidence, and less stress**. It's not just about organizing files - it's about organizing everything in your life.
 
-## Core Principles
+Based on the official methodology from [johnnydecimal.com](https://johnnydecimal.com/)
 
-### 1. **Everything has a number**
-Every item in your system gets a unique Johnny.Decimal number that tells you exactly where it belongs.
+## Core Philosophy
 
-### 2. **Everything has one place**
-Nothing belongs in multiple places. Each item has exactly one correct location.
+**"A system to organise your life"**
 
-### 3. **Numbers never change**
-Once you assign a number, it never changes. This creates stability and prevents organizational drift.
+The Johnny.Decimal system helps you organize:
+- Computer files and folders
+- Email and messages  
+- Notes and documents
+- Physical items
+- Digital accounts and subscriptions
+- Anything that needs organizing
 
-### 4. **Three levels maximum**
-The system has exactly three levels - no more, no less:
-- **Areas** (10-19, 20-29, etc.)
-- **Categories** (11, 12, 13, etc.)
-- **Items** (11.01, 11.02, etc.)
-
-### 5. **Strict limits**
-- Maximum 10 areas (10-19, 20-29, 30-39, 40-49, 50-59, 60-69, 70-79, 80-89, 90-99)
-- Maximum 10 categories per area (11-19, 21-29, 31-39, etc.)
-- Maximum 100 items per category (11.01-11.99, 12.01-12.99, etc.)
+The goal is always the same: **find things quickly, with confidence, and less stress**.
 
 ## How It Works
 
-### Structure Levels
+### The Three Levels
+
+Johnny.Decimal has exactly three levels of organization:
 
 1. **Areas (10-19, 20-29, etc.)**
-   - Broad, top-level categories that represent major areas of your life/work
-   - Each area covers exactly 10 numbers
-   - You define what each area represents based on YOUR needs
+   - Broad areas of your life
+   - Maximum 10 areas total
+   - Think "life admin", "work", "hobbies"
 
 2. **Categories (11, 12, 13, etc.)**
-   - Subcategories within each area
-   - Two-digit numbers within each area range
-   - You define what each category represents
+   - Collections of similar things within each area
+   - Maximum 10 categories per area
+   - This is where you work - categories are the most important concept
 
-3. **Items (11.01, 11.02, etc.)**
-   - Individual files, documents, or things
-   - Decimal notation with category prefix
-   - These are your actual files and documents
+3. **IDs (11.01, 11.02, etc.)**
+   - Individual items, projects, or things
+   - Maximum 100 items per category
+   - Format: category.item (e.g., 15.23)
 
-### Example Structure (User-Defined)
-
-Here's how someone might organize their personal system:
+### Example Structure
 
 ```
-10-19 Life Admin
-├── 11 Banking
-│   ├── 11.01 Bank statements
-│   ├── 11.02 Account setup documents
-│   └── 11.03 Investment records
-├── 12 Tax
-│   ├── 12.01 Tax returns
-│   ├── 12.02 Receipts
-│   └── 12.03 Tax planning documents
-└── 13 Insurance
-    ├── 13.01 Car insurance
-    ├── 13.02 Health insurance
-    └── 13.03 Home insurance
-
-20-29 Work
-├── 21 Current Projects
-│   ├── 21.01 Project Alpha documents
-│   ├── 21.02 Project Beta files
-│   └── 21.03 Project Gamma resources
-├── 22 Administration
-│   ├── 22.01 Timesheets
-│   ├── 22.02 Expense reports
-│   └── 22.03 HR documents
-└── 23 Development
-    ├── 23.01 Code repositories
-    ├── 23.02 Technical documentation
-    └── 23.03 Development tools
+10-19 Life admin
+├── 11 Me
+│   ├── 11.01 Passport renewal
+│   ├── 11.02 Health insurance
+│   └── 11.03 Gym membership
+├── 12 House
+│   ├── 12.01 Mortgage documents
+│   ├── 12.02 Utilities setup
+│   └── 12.03 Home insurance
+└── 15 Travel
+    ├── 15.01 Trip to Japan
+    ├── 15.02 Weekend in Paris
+    └── 15.03 Summer vacation
 ```
 
-## Key Differences from Traditional Systems
+## The JDex (Index) - The Heart of the System
 
-### User-Defined Structure
-Unlike other filing systems, Johnny.Decimal doesn't tell you what your categories should be. YOU decide:
-- What your areas represent
-- What categories go in each area
-- How to organize your specific content
+**The index IS your Johnny.Decimal system.**
 
-### Methodology Over Content
-The system provides the **method** (the numbering structure and rules), not the **content** (specific categories for different types of files).
+The JDex is a central record of every ID in your system, kept in a notes app like:
+- Bear (recommended for Apple users)
+- Obsidian (cross-platform favorite)
+- Simplenote (simple option)
+- Apple Notes
 
-### Scalable but Limited
-The limits (10 areas, 10 categories per area, 100 items per category) force you to think clearly about organization while providing room to grow.
+### Why You Need a JDex
 
-## Usage in Local File Organizer
+1. **Prevents duplicate IDs** - Always know what numbers are taken
+2. **Records locations** - Track where things are across your digital life
+3. **Enables search** - Find anything by searching your notes
+4. **System memory** - Document decisions and track everything
+5. **Note-taking** - Each ID becomes a place for notes and thoughts
 
-### Automatic Suggestions
-The Local File Organizer implementation:
-1. Provides a **default example structure** to get you started
-2. Makes **intelligent suggestions** based on file content and types
-3. Allows you to **customize** areas and categories for your needs
-4. Follows **strict Johnny.Decimal rules** to maintain system integrity
+### How to Use the JDex
 
-### Customization
-You can modify the areas and categories to match your specific needs:
-- Change area names to reflect your life/work domains
-- Add categories within areas as needed
-- Let the system suggest placements based on file analysis
+1. **One note per ID** - Create a note titled "15.23 Travel insurance"
+2. **Location tracking** - Record where the item actually is
+3. **Search first** - Always check your JDex before creating new IDs
+4. **Add context** - Include keywords, dates, and relevant details
 
-### Example Output Structure
+Example JDex entry:
 ```
-organized_folder/
-├── 10-19 Life Admin/
-│   ├── 11 Banking/
-│   │   ├── 11.01 bank_statement_december.pdf
-│   │   └── 11.02 investment_portfolio.pdf
-│   └── 12 Tax/
-│       ├── 12.01 tax_return_2024.pdf
-│       └── 12.02 receipts_business.pdf
-├── 20-29 Work/
-│   └── 21 Current Projects/
-│       ├── 21.01 project_proposal.docx
-│       └── 21.02 meeting_notes.txt
-└── 40-49 Resources/
-    └── 41 Documentation/
-        ├── 41.01 system_manual.pdf
-        └── 41.02 user_guide.pdf
+15.23 Travel insurance
+
+Location: Email folder, Google Drive
+Keywords: insurance, travel, policy, claims
+Notes: Policy number ABC123, expires Dec 2025
+Claim form saved in email "Insurance claims" folder
 ```
+
+## Core Principles
+
+### 1. Everything Has One Place
+Each item gets exactly one Johnny.Decimal number and lives in exactly one place.
+
+### 2. Numbers Never Change
+Once you assign 15.23, it's always 15.23. This creates stability and reliability.
+
+### 3. Limit Your Choices
+Maximum 10 at each level forces you to think clearly and avoid overwhelm.
+
+### 4. Categories Are Where You Work
+When you sit down to do something, you go to a category. This is where your work happens.
+
+### 5. A Little Friction Is Good
+Creating new areas and categories should require thought and consideration.
 
 ## Benefits
 
-### Mental Clarity
-- Forces you to think about information architecture
-- Prevents endless sub-folder hierarchies
-- Creates clear boundaries and decisions
+### Structure and Limits
+- Never more than 10 choices at any level
+- Clear hierarchy prevents getting lost
+- Numbers provide consistent ordering
 
-### Practical Organization
-- Easy to remember where things are
-- Quick to find specific items by number
-- Scales without becoming unwieldy
+### Easy Communication
+- "Check 15.23 for the travel insurance"
+- Short, memorable, speakable numbers
+- Works in conversation and documentation
 
-### Long-term Stability
-- Numbers don't change, so your system doesn't drift
-- Works across different computer systems and platforms
-- Future-proof organizational method
+### Cross-Platform Organization
+- Same system works everywhere
+- Files, email, notes, physical items
+- Consistent no matter what tools you use
+
+### Memory and Search
+- JDex becomes your system's memory
+- Search by ID, keyword, or description
+- Never lose track of where things are
+
+## Getting Started
+
+### 1. Design Your Areas
+Start with 3-5 broad areas of your life:
+- 10-19 Life admin
+- 20-29 Work  
+- 30-39 Hobbies/Projects
+
+### 2. Add Categories As Needed
+Don't pre-plan everything. Add categories when you need them:
+- 11 Me (personal documents)
+- 12 House (home-related stuff)
+- 13 Money (financial matters)
+
+### 3. Create Your JDex
+Set up a notes app and start creating entries for each ID.
+
+### 4. Assign IDs to Real Things
+Start organizing your actual files, emails, and projects.
+
+## Advanced Concepts
+
+### Multiple Systems
+If you have completely separate domains (like work vs. personal), you might need multiple systems with identifiers like:
+- SYS.AC.ID (e.g., WORK.15.23)
+
+### Standard Zeros
+Some users implement standard patterns across categories:
+- xx.01 Inbox
+- xx.02 Work in progress  
+- xx.03 Checklists
+- etc.
+
+### The Librarian
+Someone who maintains the system and keeps it organized. This could be you or a team member.
 
 ## Best Practices
 
-### Starting Out
-1. **Begin with broad areas** that represent major domains of your life/work
-2. **Add categories gradually** as you identify natural groupings
-3. **Don't pre-fill everything** - let categories emerge organically
-4. **Use descriptive names** for areas and categories that make sense to you
+### For Areas
+- Keep them broad - "Life admin" not "Insurance"
+- Think about major domains of your life
+- Don't worry about using all 10 areas
 
-### Maintaining the System
-1. **Stick to the limits** - if you need more than 10 categories in an area, consider splitting the area
-2. **Be consistent** with naming conventions
-3. **Document your decisions** so you remember why you organized things a certain way
-4. **Review periodically** but resist the urge to constantly reorganize
+### For Categories  
+- This is where you work
+- Prefer fewer, broader categories
+- "Money" instead of "Budget", "Savings", "Investments"
+- Let them emerge naturally
 
-### Common Mistakes to Avoid
-1. **Don't create deep hierarchies** - stick to exactly three levels
-2. **Don't duplicate items** - everything has exactly one place
-3. **Don't change numbers** once assigned
-4. **Don't overthink it** - start simple and evolve
+### For IDs
+- Create meaningful descriptions
+- Use dates in subfolders (2024-12-15 format)
+- One subfolder level is okay, more is chaos
+- Start in your JDex, then create files
 
-For more information about the official Johnny.Decimal methodology, visit: https://johnnydecimal.com/
+### For the JDex
+- Search your notes before creating new IDs
+- Record locations across your digital life
+- Add keywords to help future searches
+- Include context and decisions
+
+## Common Mistakes to Avoid
+
+1. **Creating too many areas** - Start small, grow gradually
+2. **Over-categorizing** - Broader categories are usually better  
+3. **Skipping the JDex** - This is the heart of the system
+4. **Pre-planning everything** - Let the system grow organically
+5. **Going too deep** - Stick to exactly three levels
+
+## Why It Works
+
+The Johnny.Decimal system works because it:
+- **Reduces decision fatigue** through clear limits
+- **Provides structure** without being rigid
+- **Scales with your life** from simple to complex
+- **Works everywhere** across all platforms
+- **Gets better with use** as you learn the numbers
+
+The key insight: It's not about the perfect filing system. It's about reducing the stress and time spent looking for things, so you can focus on what matters.
+
+## Learn More
+
+- Official website: [johnnydecimal.com](https://johnnydecimal.com/)
+- Community forum: [forum.johnnydecimal.com](https://forum.johnnydecimal.com/)
+- Discord: Available through the website
+
+The system is free to use and the concepts work at home, work, or anywhere you need organization.
